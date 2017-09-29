@@ -2,7 +2,8 @@
  * Basic setup
  */
 
-const express = require('express')
+const express = require('express');
+const pg = require('pg');
 const bcrypt = require('bcrypt-nodejs');
 const cookieParser = require('cookie-parser');
 const bodyparser = require('body-parser');
@@ -27,14 +28,12 @@ app.set('port', process.env.PORT || 3000);
 app.use(logger('dev'));
 
 app.use(bodyParser.json()); // Parses json, multi-part (file), url-encoded 
- 
-app.get('/', function(req, res) {
-	res.render('index');
-});
- 
+  
 var server = http.createServer(app);
  
-// Reload code here 
+/**
+ * Reload when changes are made
+ */
 
 reloadServer = reload(app);
 watch.watchTree('../src/js', function (f, curr, prev) {
@@ -42,30 +41,44 @@ watch.watchTree('../src/js', function (f, curr, prev) {
     reloadServer.reload();
 });
  
-
+/**
+ * Database stuff
+ */
 
 
 
 /**
  * Start Routes
  */
+app.get('*', function(req, res) {
+  res.render('index');
+});
 
+app.get('/', function(req, res) {
+	res.render('index');
+});
 
 app.post('/login', function(req, res){
-	authoriseUser(	req.body.email, 
-				  	req.body.password,
-					function(isMatch,matchedUser) {
-						if(isMatch) {
-							res.cookie('userId',matchedUser.id , {
-						      maxAge: 24 * 60 * 60 * 1000
-						    });
-							res.render('welcome');
-						} else {
-							res.render('loginForm');
-						}
-					}
+	authoriseUser(	
+
+		req.body.email, 
+	  	req.body.password,
+		function(isMatch,matchedUser) {
+			if(isMatch) {
+				res.cookie('userId',matchedUser.id , {
+			      maxAge: 24 * 60 * 60 * 1000
+			    });
+				res.render('welcome');
+			} else {
+				res.render('loginForm');
+			}
+		}
 	)	
 });
+
+// app.get('/new-user', function(req, res){	
+// 	res.render('new-user');
+// });
 
 // server.post('/new-user', function(req, res){
 // 	if (!userExist(req.body.email)) {
@@ -91,6 +104,9 @@ app.post('/login', function(req, res){
 // 		res.render('loginForm');
 // 	}
 // });
+
+
+
 
 
 /**

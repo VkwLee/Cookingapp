@@ -5,8 +5,6 @@ require('../scss/style.scss');
 
 
 ReactDOM.render(
-	
-		<div className='c-app'>
-			<App/>
-		</div>, document.getElementById('app')
+
+	<App/>, document.getElementById('app')
 );

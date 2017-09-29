@@ -40,5 +40,28 @@
 
 	&__button {
 		float: right;
+
 	}
+
+	form {
+		@include clearfix;
+	}
+
+	&__new-user {
+		
+		margin-top: 50px;
+		text-align: center;
+
+		a {
+			text-decoration: none;
+			color: darken(white,80%);
+			font-size: 1em;
+			font-weight: bold;
+		} 
+
+		a:hover {
+			text-decoration: underline;
+		}
+	}
+
 }

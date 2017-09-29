@@ -1,7 +1,7 @@
 .o-button {
 	padding: 15px 20px;
 	background: $color--purple;
-	border-radius: 15px;
+	border-radius: 6em;
 	color: white;
 	outline: none;
 	-webkit-user-select: none;
@@ -13,9 +13,18 @@
     border: 1px solid darken($color--purple, 10%);
     font-family: 'nobile';
     margin: 5px;
+    font-size: 0.85em;
+    padding: 0.9375em 2em 0.875em 2em;
+    transition: all 0.2s ease-in;
 
     &:hover,
     &:active {
     	border: 1px solid darken($color--purple, 30%);
+    }
+
+    &[disabled] {
+        background: grey;
+        box-shadow: none;
+        cursor: default!important;
     }
 }

@@ -2,10 +2,9 @@ CREATE TABLE users (
   users_id SERIAL PRIMARY KEY,
   name TEXT NOT NULL,
   email TEXT NOT NULL UNIQUE,
+  profile_pic TEXT NOT NULL,
   password_hash CHAR(50) NOT NULL
 );
-
-#save the image work with a path
 
 CREATE TABLE recipes (
   recipes_id SERIAL PRIMARY KEY,

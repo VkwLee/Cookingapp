@@ -1,5 +1,6 @@
 import React from "react";
 import LoginForm from "./LoginForm.jsx";
+import {BrowserRouter, Route, Link, Switch} from 'react-router-dom';
 import Home from "./Home.jsx";
 
 
@@ -16,11 +17,16 @@ export default class App extends React.Component {
 
 //if key is there dont show the login page.
     render() {
-
-
-
 		return (
-				<LoginForm/>
+			<BrowserRouter>
+				<div className='c-app'>
+					<Switch>
+						<Route path='/' component={LoginForm}>	
+						</Route>
+						<Route path='/new-user' component={LoginForm}/>
+					</Switch>
+				</div>
+			</BrowserRouter>
 		);
 	 
     }
