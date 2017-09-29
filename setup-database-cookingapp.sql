@@ -2,7 +2,7 @@ CREATE TABLE users (
   users_id SERIAL PRIMARY KEY,
   name TEXT NOT NULL,
   email TEXT NOT NULL UNIQUE,
-  profile_pic TEXT NOT NULL,
+  profile_pic TEXT,
   password_hash CHAR(50) NOT NULL
 );
 

@@ -42,10 +42,34 @@ watch.watchTree('../src/js', function (f, curr, prev) {
 });
  
 /**
- * Database stuff
+ * Setting up database connection
  */
 
+const db = new pg.Pool({
+	user: 'victorkgongwoeilee',
+	host: 'localhost',
+	database: 'cookingapp',
+	password: ''
+});
 
+db.connect()
+	.then( clientDB => {
+		clientDB.query( "SELECT * FROM users")
+			.then (userResult => {
+				clientDB.release();
+				console.log(userResult);	
+			})
+
+			.catch(error => {
+				clientDB.release();
+				console.error('couldn\'t get users',error.stack);
+			});
+
+			
+	})
+	.catch(error => console.error('Could not connect with the database',error));
+
+		
 
 /**
  * Start Routes
@@ -56,6 +80,27 @@ app.get('*', function(req, res) {
 
 app.get('/', function(req, res) {
 	res.render('index');
+});
+
+app.post('/new-user', function(req, res) {
+
+	const data = {
+		name: req.body.name,
+		email: req.body.email,
+		password: req.body.password
+	};
+
+	db.query ( 
+		"INSERT INTO users (name, email, password_hash) VALUES ($1, $2, $3)",
+		 [data.name,data.email,data.password]
+	);
+
+	const query = db.query("SELECT * FROM users ORDER BY id ASC");
+
+	query.on('end', () => {
+      done();
+      return res.json(results);
+    });
 });
 
 app.post('/login', function(req, res){
@@ -75,10 +120,6 @@ app.post('/login', function(req, res){
 		}
 	)	
 });
-
-// app.get('/new-user', function(req, res){	
-// 	res.render('new-user');
-// });
 
 // server.post('/new-user', function(req, res){
 // 	if (!userExist(req.body.email)) {

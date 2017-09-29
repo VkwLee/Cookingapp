@@ -3,20 +3,20 @@ import {Route ,Link} from 'react-router-dom';
 import Home from "./Home.jsx";
 
 export default class LoginForm extends React.Component {
-  // constructor(props) {
-  //   super(props);
+  constructor(props) {
+    super(props);
 
-  //   this.state = {
-  //     username: 'bla',
-  //     email: 'victor@cookingapp.com',
-  //     password: '123',
-  //     authState: null
+    this.state = {
+      name             : '',
+      password         : '',
+      email            : '',
+      confirm_password : ''
 
-  //   };
+    };
 
-  //   this.handleChange = this.handleChange.bind(this);
-  //   this.handleSubmit = this.handleSubmit.bind(this);
-  // }
+    this.handleChange = this.handleChange.bind(this);
+    // this.handleSubmit = this.handleSubmit.bind(this);
+  }
 
   // authentication() {
   //   if(this.state.username === 'abc' && this.state.password === '123') {
@@ -39,43 +39,43 @@ export default class LoginForm extends React.Component {
   //   }
   // }
 
-  // handleChange(event) {
-  //   const name = event.target.name;
-  //   const newValue = event.target.value;
+  handleChange(event) {
+    const name = event.target.name;
+    const newValue = event.target.value;
+    this.setState({
+      [name]: newValue
+    });
 
     // v1
-    /*if (name === 'username') {
-      this.setState({
-        username: newValue
-      });
-    } else if (name === 'password') {
-      this.setState({
-        password: newValue
-      });
-    }*/
+    // if (name === 'username') {
+    //   this.setState({
+    //     username: newValue
+    //   });
+    // } else if (name === 'password') {
+    //   this.setState({
+    //     password: newValue
+    //   });
+    // }
 
     // v2
-    /*let stateTransition = {};
-    stateTransition[name] = newValue;
+    // let stateTransition = {};
+    // stateTransition[name] = newValue;
 
     // ES6 computed property syntax
-    let stateTransition = {
-      [name]: newValue
-    };
+    // let stateTransition = {
+    //   [name]: newValue
+    // };
 
-    this.setState(stateTransition);*/
+    // this.setState(stateTransition);
 
-    // v3
-  //   this.setState({
-  //     [name]: newValue
-  //   });
-  // }
+    
+  }
 
   // authenticationRender() {
   //   return <div>hey awesome</div>
   // }
-  // <a href="/new-user">create a new account</a>
-  // 
+
+ 
  
 
 
@@ -90,15 +90,15 @@ export default class LoginForm extends React.Component {
           <form method='POST' action='/login'>
             <div>
               <label htmlFor='name'>Name</label>
-              <input id='name'type='text' name='name' placeholder='name' value=''/>
+              <input id='name'type='text' name='name' placeholder='enter your name' value='' onChange = {this.handleChange}/>
             </div>
             <div>
               <label htmlFor='email'>Email</label>
-                <input id='email' type='text' name='email' placeholder='email' value=''/>
+                <input id='email' type='text' name='email' placeholder='enter your email' value='' onChange = {this.handleChange}/>
             </div>
             <div>
               <label htmlFor='password'>Password</label>
-                <input id='password' type='text' name='password' placeholder='password' value=''/>
+                <input id='password' type='text' name='password' placeholder='enter your password' value='' onChange = {this.handleChange}/>
             </div>
             <button className='o-button c-login__button' type='submit' name='submit'>Login</button>
           </form>
@@ -117,19 +117,19 @@ export default class LoginForm extends React.Component {
           <form method='POST' action='/new-user'>
             <div>
               <label htmlFor='name'>Name</label>
-              <input id='name'type='text' name='name' placeholder='name' value=''/>
+              <input id='name'type='text' name='name' placeholder='enter your name' value={this.state.name} onChange = {this.handleChange}/>
             </div>
             <div>
               <label htmlFor='email'>Email</label>
-                <input id='email' type='text' name='email' placeholder='email' value=''/>
+                <input id='email' type='text' name='email' placeholder='enter your email' value={this.state.email} onChange = {this.handleChange}/>
             </div>
             <div>
               <label htmlFor='password'>Password</label>
-                <input id='password' type='text' name='password' placeholder='password' value=''/>
+                <input id='password' type='text' name='password' placeholder='enter your password' value={this.state.password} onChange = {this.handleChange}/>
             </div>
             <div>
               <label htmlFor='confirm-password'>Confirm Password</label>
-                <input id='confirm-password' type='text' name='confirm-password' placeholder='confirm-password' value=''/>
+                <input id='confirm-password' type='text' name='confirm_password' placeholder='confirm your password' value={this.state.confirm_password} onChange = {this.handleChange}/>
             </div>
             <button className='o-button c-login__button' type='submit' name='submit'>Submit</button>
           </form>
