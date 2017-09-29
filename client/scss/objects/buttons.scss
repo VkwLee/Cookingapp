@@ -1,0 +1,21 @@
+.o-button {
+	padding: 15px 20px;
+	background: $color--purple;
+	border-radius: 15px;
+	color: white;
+	outline: none;
+	-webkit-user-select: none;
+    cursor: pointer;
+    touch-action: manipulation;
+    text-align: center;
+    box-shadow: 0px 2px 0px 0px darken($color--purple, 10%);
+    white-space: nowrap;
+    border: 1px solid darken($color--purple, 10%);
+    font-family: 'nobile';
+    margin: 5px;
+
+    &:hover,
+    &:active {
+    	border: 1px solid darken($color--purple, 30%);
+    }
+}
