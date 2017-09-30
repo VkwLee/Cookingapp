@@ -83,24 +83,57 @@ app.get('/', function(req, res) {
 });
 
 app.post('/new-user', function(req, res) {
-
 	const data = {
 		name: req.body.name,
 		email: req.body.email,
-		password: req.body.password
+		password_hash: ''
 	};
 
-	db.query ( 
-		"INSERT INTO users (name, email, password_hash) VALUES ($1, $2, $3)",
-		 [data.name,data.email,data.password]
+	// db.query ( 
+	// 	"INSERT INTO users (name, email, password_hash) VALUES ($1, $2, $3)",
+	// 	 [data.name,data.email,data.password_hash]
+	// ).then (function(success) {
+	//     res.json({success : "Create new user succeeded", status : 200});
+	// }).catch(function(error) {
+	//     res.json({error : "Failed to create new user", status : 500});
+ //    });	
+
+
+	createUser(req.body.email,req.body.password, function(hash,email) {
+
+											   		if(hash && email) {
+
+
+											   			data.password_hash = hash;
+
+											   			db.query ( 
+															"INSERT INTO users (name, email, password_hash) VALUES ($1, $2, $3)",
+															 [data.name,data.email,data.password_hash]
+														).then (function(success) {
+															console.log('success');
+														    res.json({success : "Create new user succeeded", status : 200});
+														}).catch(function(error) {
+															console.error('failed',error);
+														    res.json({error : "Failed to create new user", status : 500});
+													    });			   			
+														    
+											   		}
+												}
 	);
+		// db.query ( 
+		// 	"INSERT INTO users (name, email, password_hash) VALUES ($1, $2, $3)",
+		// 	 [data.name,data.email,data.password_hash]
+		// ).then (function(success) {
+		// 	console.log('success');
+		//     res.json({success : "Create new user succeeded", status : 200});
+		// }).catch(function(error) {
+		// 	console.log('failed');
+		//     res.json({error : "Failed to create new user", status : 500});
+	 //    });		
+	
 
-	const query = db.query("SELECT * FROM users ORDER BY id ASC");
+		
 
-	query.on('end', () => {
-      done();
-      return res.json(results);
-    });
 });
 
 app.post('/login', function(req, res){
@@ -183,17 +216,20 @@ function userExist(email){
 	return false;
 }
 
-function createUser(email, password, confirmation, callback){
-	if (confirmation === password) {
-		//let user = {'email':email,'password':''};
+function createUser(email, password, callback){
+	// if (confirmation === password) {
+	// 	//let user = {'email':email,'password':''};
 
-		bcrypt.hash(password, null, null, function(err, hash) {
-			callback(hash,email);
-		});
-		return true;
-	} else {
-		return false;
-	}
+	bcrypt.hash(password, null, null, function(err, hash) {
+		callback(hash,email);
+
+	});
+
+	return true;
+	// 	return true;
+	// } else {
+	// 	return false;
+	// }
 }
 
 

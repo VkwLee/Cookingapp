@@ -3,7 +3,7 @@ CREATE TABLE users (
   name TEXT NOT NULL,
   email TEXT NOT NULL UNIQUE,
   profile_pic TEXT,
-  password_hash CHAR(50) NOT NULL
+  password_hash CHAR(500) NOT NULL
 );
 
 CREATE TABLE recipes (

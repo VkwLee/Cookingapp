@@ -8,6 +8,13 @@
 	right: 0;
 	top: 20%;
 
+	span {
+		font-size: 0.85em;
+		color: $color--red;
+		display: inline;
+	    margin-left: 20px;
+	}
+
 	h1,h4 {
 		text-align: center;
 		color: white;
