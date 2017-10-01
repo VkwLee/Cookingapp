@@ -17,18 +17,14 @@ const logger = require('morgan');
 var app = express();
 
 app.use(bodyparser.urlencoded({extended: true}));
+app.use(bodyParser.json()); // Parses json, multi-part (file), url-encoded 
+app.use(express.static('../src'));
+app.use(logger('dev'));
 app.use(cookieParser());
 
 app.set('view engine', 'pug');
- 
-app.use(express.static('../src'));
- 
 app.set('port', process.env.PORT || 3000);
-
-app.use(logger('dev'));
-
-app.use(bodyParser.json()); // Parses json, multi-part (file), url-encoded 
-  
+ 
 var server = http.createServer(app);
  
 /**
@@ -89,147 +85,115 @@ app.post('/new-user', function(req, res) {
 		password_hash: ''
 	};
 
-	// db.query ( 
-	// 	"INSERT INTO users (name, email, password_hash) VALUES ($1, $2, $3)",
-	// 	 [data.name,data.email,data.password_hash]
-	// ).then (function(success) {
-	//     res.json({success : "Create new user succeeded", status : 200});
-	// }).catch(function(error) {
-	//     res.json({error : "Failed to create new user", status : 500});
- //    });	
+	createUser (
+		req.body.email,
+		req.body.password,
+		function(hash,email) {
 
+	   		if(hash && email) {
 
-	createUser(req.body.email,req.body.password, function(hash,email) {
+	   			data.password_hash = hash;
 
-											   		if(hash && email) {
-
-
-											   			data.password_hash = hash;
-
-											   			db.query ( 
-															"INSERT INTO users (name, email, password_hash) VALUES ($1, $2, $3)",
-															 [data.name,data.email,data.password_hash]
-														).then (function(success) {
-															console.log('success');
-														    res.json({success : "Create new user succeeded", status : 200});
-														}).catch(function(error) {
-															console.error('failed',error);
-														    res.json({error : "Failed to create new user", status : 500});
-													    });			   			
-														    
-											   		}
-												}
+   				db.query ( 
+					"INSERT INTO users (name, email, password_hash) VALUES ($1, $2, $3)",
+					 [data.name,data.email,data.password_hash]
+				).then (function(success) {
+					console.log('success');
+				    res.json({success : "Create new user succeeded", status : 200});
+				}).catch(function(error) {
+					console.error('failed',error);
+					res.status(500);
+				    res.json({error : "Failed to create new user", status : 500});
+			    });	   			
+	   		}
+		}
 	);
-		// db.query ( 
-		// 	"INSERT INTO users (name, email, password_hash) VALUES ($1, $2, $3)",
-		// 	 [data.name,data.email,data.password_hash]
-		// ).then (function(success) {
-		// 	console.log('success');
-		//     res.json({success : "Create new user succeeded", status : 200});
-		// }).catch(function(error) {
-		// 	console.log('failed');
-		//     res.json({error : "Failed to create new user", status : 500});
-	 //    });		
-	
-
 		
-
 });
 
 app.post('/login', function(req, res){
-	authoriseUser(	
-
-		req.body.email, 
-	  	req.body.password,
-		function(isMatch,matchedUser) {
-			if(isMatch) {
-				res.cookie('userId',matchedUser.id , {
-			      maxAge: 24 * 60 * 60 * 1000
-			    });
-				res.render('welcome');
-			} else {
-				res.render('loginForm');
+	// let self = this;
+	if(!userExist(req.body.email)){
+		console.log('before authoriseUser password= ', req.body.password);
+		authoriseUser(	
+			req.body.email, 
+		  	req.body.password,
+			function(isMatch, dbUser) {
+				console.log('start with authoriseUser password= ',req.body.password);
+				console.log(dbUser);
+				if(isMatch) {
+					console.log('success login',dbUser);
+				    res.json({success : "login succeeded", status : 200});
+					// res.cookie('userId',matchedUser.id , {
+				 //      maxAge: 24 * 60 * 60 * 1000
+				 //    });
+					// res.render('welcome');
+				} else {
+					console.log('error login');
+					res.status(400);
+				    res.json({error : "login failed password not correct", status : 400});
+				}
 			}
-		}
-	)	
+		)	
+	}	
 });
-
-// server.post('/new-user', function(req, res){
-// 	if (!userExist(req.body.email)) {
-// 		if (createUser(req.body.email,
-// 					   req.body.password,
-// 					   req.body.confirmPassword,
-// 					   function(hash,email){
-// 					   		if(hash && email){
-// 					   			let user = {'email':email,'password': hash, 'id':g_users.length};
-// 							    g_users.push(user);
-// 							    console.log('g_users post/',g_users);
-// 					   		}
-// 						}
-// 					)
-// 			)
-// 		{	
-// 			res.render('loginForm');
-// 		} else {
-// 			res.render('registrationForm');
-// 		}
-// 	}
-// 	else {
-// 		res.render('loginForm');
-// 	}
-// });
-
-
-
-
 
 /**
  * Start functions
  */
 
-const g_users = [];
-
 function authoriseUser(email, password, callback) {
-	let matchedUser = null;
-	for(const user of g_users){
-		if (user.email === email) {
-			matchedUser = user;
-			break;
-		}
-	}
-	if (matchedUser === null) {
-		callback(false);
-		return;
-	}
-	bcrypt.compare(password, matchedUser.password, function(err, isMatch) {
-	    callback(isMatch,matchedUser);
-	    return;
-	});
+	let dbUser = '';
+
+	let self = this;
+
+	db.query ( 
+		"SELECT * FROM users WHERE email=($1)", [email]
+	).then ( result => {
+		console.log('password ',password);
+		dbUser	   = result.rows[0];
+		console.log('authoriseUser dbUser.password_hash= ', dbUser.password_hash);
+		bcrypt.compare(password, dbUser.password_hash, function(err, isMatch) {
+			console.log('bcrypt compare= ', isMatch);
+			console.log('bcrypt compare error= ', err);
+		    callback(isMatch,dbUser);
+		    return;
+		});
+	}).catch(function(error) {
+		console.error('user exists failed',error);
+		res.status(500);
+	    res.json({error : "fetch login failed", status : 500});
+    });	
 }
 
 function userExist(email){
-	for(const user of g_users){
-		if (user.email === email ){
+	db.query ( 
+		"SELECT email FROM users WHERE email=($1)", [email]
+	).then ( result => {
+
+		if(result.rowCount > 0 && email === result.rows[0].email ) {
+			console.log('user exists!');
 			return true;
+		} else {
+			res.json({error : "fetch login failed user doesn\'t exists", status : 400});
+			return false;
 		}
-	}
-	return false;
+	}).catch(function(error) {
+		console.error('user exists failed',error);
+		res.status(500);
+	    res.json({error : "fetch login failed", status : 500});
+    });	
 }
 
 function createUser(email, password, callback){
-	// if (confirmation === password) {
-	// 	//let user = {'email':email,'password':''};
 
+	console.log('createUser with password= ',password);
 	bcrypt.hash(password, null, null, function(err, hash) {
 		callback(hash,email);
 
 	});
 
 	return true;
-	// 	return true;
-	// } else {
-	// 	return false;
-	// }
 }
 
 
