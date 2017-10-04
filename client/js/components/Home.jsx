@@ -1,12 +1,37 @@
 import React from "react";
+import {Route ,Link} from 'react-router-dom';
+import SearchResults from "./SearchResults.jsx";
+import SearchField from "./SearchField.jsx";
 
 export default class Home extends React.Component {
 
 	constructor(props) {
 		super(props);
+
+		this.state = {
+			searchTerm: ''
+	    };
 	}
 
     render() {
-        return (<h1>This is the Home Page</h1>);
+        return (
+        	<div className='c-home'>
+        		<div className='c-navbar'>
+        			<div className='c-navbar__logo'>
+	        			<h1> Foodbook </h1>
+	        		</div>
+    				<div className='c-navbar__actions'>
+    					<SearchField onSearch= {searchTerm => this.setState({ searchTerm: searchTerm })} />
+					    <nav className='c-navbar__actions--nav'>
+					        <ul>
+		        				<li><Link to='/'>Homepage</Link></li>
+		        				<li><Link to='/profile'>Profile</Link></li>
+		        			</ul>
+		        		</nav>
+    				</div>
+        		</div>
+	        	<SearchResults onSearch = {this.state.searchTerm} />
+	        </div>
+    	);
     }
 }

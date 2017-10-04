@@ -3,4 +3,12 @@
 	width: 100%;
 	padding: 0;
 	margin: 0;
+	background-color: lighten($color--main, 50%);
+
+	.content {
+		display: block;
+		position: relative;
+		top: 90px;
+
+	}
 }

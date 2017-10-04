@@ -24,7 +24,7 @@ export default class LoginForm extends React.Component {
 
   handleChange(evt) {
     const name = evt.target.name;
-    const newValue = evt.target.value;
+    const newValue = evt.target.value.trim();
     this.setState({
       password_style_class  : '',
       email_style_class     : '',

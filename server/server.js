@@ -5,6 +5,7 @@
 const express = require('express');
 const pg = require('pg');
 const bcrypt = require('bcrypt-nodejs');
+const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const bodyparser = require('body-parser');
 const http = require('http');
@@ -20,6 +21,14 @@ app.use(bodyparser.urlencoded({extended: true}));
 app.use(bodyParser.json()); // Parses json, multi-part (file), url-encoded 
 app.use(express.static('../src'));
 app.use(logger('dev'));
+
+app.use(session({
+	secret: 'this is a secret',
+	resave: false,
+	saveUninitialized: false
+}));
+
+
 app.use(cookieParser());
 
 app.set('view engine', 'pug');
@@ -50,16 +59,16 @@ const db = new pg.Pool({
 
 db.connect()
 	.then( clientDB => {
-		clientDB.query( "SELECT * FROM users")
-			.then (userResult => {
-				clientDB.release();
-				console.log(userResult);	
-			})
+		// clientDB.query( "SELECT * FROM users")
+		// 	.then (userResult => {
+		// 		clientDB.release();
+		// 		console.log(userResult);	
+		// 	})
 
-			.catch(error => {
-				clientDB.release();
-				console.error('couldn\'t get users',error.stack);
-			});
+		// 	.catch(error => {
+		// 		clientDB.release();
+		// 		console.error('couldn\'t get users',error.stack);
+		// 	});
 
 			
 	})
@@ -112,78 +121,45 @@ app.post('/new-user', function(req, res) {
 });
 
 app.post('/login', function(req, res){
-	// let self = this;
-	if(!userExist(req.body.email)){
-		console.log('before authoriseUser password= ', req.body.password);
-		authoriseUser(	
-			req.body.email, 
-		  	req.body.password,
-			function(isMatch, dbUser) {
-				console.log('start with authoriseUser password= ',req.body.password);
-				console.log(dbUser);
-				if(isMatch) {
-					console.log('success login',dbUser);
-				    res.json({success : "login succeeded", status : 200});
-					// res.cookie('userId',matchedUser.id , {
-				 //      maxAge: 24 * 60 * 60 * 1000
-				 //    });
-					// res.render('welcome');
-				} else {
-					console.log('error login');
-					res.status(400);
-				    res.json({error : "login failed password not correct", status : 400});
+
+	userExist(req.body.email)
+	.then(doesExist => {
+		if (doesExist) {
+			authoriseUser(	
+				req.body.email, 
+			  	req.body.password,
+				function(isMatch, dbUser) {
+					console.log('start with authoriseUser password= ',req.body.password);
+					console.log(dbUser);
+					if(isMatch) {
+						console.log('success login',dbUser);
+					    res.json({success : "login succeeded", status : 200}).end();
+						// res.cookie('userId',matchedUser.id , {
+					 //      maxAge: 24 * 60 * 60 * 1000
+					 //    });
+						// res.render('welcome');
+					} else {
+						console.log('error login');
+						res.status(400);
+					    res.json({error : 'login failed password not correct', status : 400}).end();
+					}
 				}
-			}
-		)	
-	}	
+			);
+			
+		} else {
+			res.status(400);
+			res.json({error : 'User doesn\'t exists', status : 400}).end();
+		}
+	})
+	.catch(error => { 
+		res.status(400);
+		res.json({error : 'Could\'t fetch the user', status : 400}).end();
+	});	
 });
 
 /**
- * Start functions
+ * Functions
  */
-
-function authoriseUser(email, password, callback) {
-	let dbUser = '';
-
-	let self = this;
-
-	db.query ( 
-		"SELECT * FROM users WHERE email=($1)", [email]
-	).then ( result => {
-		console.log('password ',password);
-		dbUser	   = result.rows[0];
-		console.log('authoriseUser dbUser.password_hash= ', dbUser.password_hash);
-		bcrypt.compare(password, dbUser.password_hash, function(err, isMatch) {
-			console.log('bcrypt compare= ', isMatch);
-			console.log('bcrypt compare error= ', err);
-		    callback(isMatch,dbUser);
-		    return;
-		});
-	}).catch(function(error) {
-		console.error('user exists failed',error);
-		res.status(500);
-	    res.json({error : "fetch login failed", status : 500});
-    });	
-}
-
-function userExist(email){
-	db.query ( 
-		"SELECT email FROM users WHERE email=($1)", [email]
-	).then ( result => {
-
-		if(result.rowCount > 0 && email === result.rows[0].email ) {
-			console.log('user exists!');
-			return true;
-		} else {
-			res.json({error : "fetch login failed user doesn\'t exists", status : 400});
-			return false;
-		}
-	}).catch(function(error) {
-		console.error('user exists failed',error);
-		res.status(500);
-	    res.json({error : "fetch login failed", status : 500});
-    });	
-}
 
 function createUser(email, password, callback){
 
@@ -194,6 +170,42 @@ function createUser(email, password, callback){
 	});
 
 	return true;
+}
+
+function userExist(email){
+	return db.query ( 
+		'SELECT email FROM users WHERE email=($1)', [email]
+	).then ( result => {
+		console.log('userExist',result.rowCount);
+		if(result.rowCount === 1 ) {
+			return true;
+		} else {
+			return false;
+		}
+	})
+	.catch(function(error) {
+		console.error('couldn\'t fetch the emails',error);
+		throw error;
+    });
+}
+
+function authoriseUser(email, password, callback) {
+	let dbUser = '';
+	let self = this;
+	db.query ( 
+		'SELECT * FROM users WHERE email=($1)', [email]
+	).then ( result => {
+		dbUser	   = result.rows[0];
+		dbUser.password_hash = dbUser.password_hash.trim();
+		bcrypt.compare(password, dbUser.password_hash, function(err, isMatch) {
+		    callback(isMatch,dbUser);
+		    return;
+		});
+	}).catch(function(error) {
+		console.error('failed on authoriseUser',error);
+		res.status(500);
+	    res.json({error : 'failed on authoriseUser', status : 500}).end();
+    });	
 }
 
 

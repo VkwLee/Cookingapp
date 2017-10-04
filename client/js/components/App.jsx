@@ -23,25 +23,17 @@ export default class App extends React.Component {
 		})
 	}
 
-
-
-//if key is there dont show the login page.
     render() {
 
     	const MyLogInForm = (props) => {
 	      return (
-	        <LoginForm {...props} toggleLogInState= {() => this.handleToggleLogInState()}>
-		     
-	        </LoginForm> 	
+	        <LoginForm {...props} toggleLogInState= {() => this.handleToggleLogInState()}/>	
 	      );
 	    }
 
 	    const MyNewUser = (props) => {
 	      return (
-	        <NewUser {...props} toggleLogInState= {() => this.handleToggleLogInState()}
-	        	
-	         />
-	        	
+	        <NewUser {...props} toggleLogInState= {() => this.handleToggleLogInState()}/>	
 	      );
 	    }
 
