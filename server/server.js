@@ -14,6 +14,7 @@ const reload = require('reload');
 const watch = require('watch');
 const bodyParser = require('body-parser');
 const logger = require('morgan');
+const request = require('request');
  
 var app = express();
 
@@ -21,6 +22,33 @@ app.use(bodyparser.urlencoded({extended: true}));
 app.use(bodyParser.json()); // Parses json, multi-part (file), url-encoded 
 app.use(express.static('../src'));
 app.use(logger('dev'));
+
+// app.use('*', function(req, res, next) {
+//   res.header('Access-Control-Allow-Origin', '*');
+//   res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS');
+//   res.header('Access-Control-Allow-Headers', 'Content-Type');
+//   next();
+// });
+
+app.use(function (req, res, next) {
+
+    // Website you wish to allow to connect
+    res.setHeader('Access-Control-Allow-Origin', 'http://food2fork.com/api/search');
+
+    // Request methods you wish to allow
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+
+    // Request headers you wish to allow
+    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+
+    // Set to true if you need the website to include cookies in the requests sent
+    // to the API (e.g. in case you use sessions)
+    res.setHeader('Access-Control-Allow-Credentials', true);
+
+    // Pass to next layer of middleware
+    next();
+});
+
 
 app.use(session({
 	secret: 'this is a secret',
@@ -79,8 +107,27 @@ db.connect()
 /**
  * Start Routes
  */
-app.get('*', function(req, res) {
-  res.render('index');
+
+app.get('/recipes',function(req,res){
+
+	request('http://food2fork.com/api/search?key=2e8098a7525207c36d8d2d2311d7a858&q=potatoes', function (error, response, body) {
+	  // console.log('error:', error); // Print the error if one occurred
+	  // console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
+	  // console.log('body:', body); // Print the HTML for the Google homepage.
+	  res.json(body).end();
+	});
+
+
+
+	// request.get()
+	// .on('response', function(response) {
+	// 	console.log(response.statusCode);
+	// 	res.json({body});
+	// })
+	// .on('error', function(error) {
+	// 	res.status(500);
+	//     res.json({error : "Failed to create new user", status : 500});
+	// })
 });
 
 app.get('/', function(req, res) {
@@ -155,6 +202,11 @@ app.post('/login', function(req, res){
 		res.status(400);
 		res.json({error : 'Could\'t fetch the user', status : 400}).end();
 	});	
+});
+
+//this need to be at the bottom so if notthing catch the route this will run
+app.get('*', function(req, res) {
+  res.render('index');
 });
 
 /**

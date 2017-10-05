@@ -6,8 +6,7 @@ export default class SearchResults extends React.Component {
     super(props);
 
     this.state = {
-      searchTerm: '',
-      doSearch: false
+      searchTerm: ''
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -23,8 +22,27 @@ export default class SearchResults extends React.Component {
       });    
   }
 
+   // this.props.onSearch(this.state.recipe);
+   //  // mode: 'no-cors'
+
   handleSearch(){
-    this.props.onSearch(this.state.searchTerm);
+
+
+    const API_KEY = '2e8098a7525207c36d8d2d2311d7a858';
+    const API_URL = 'http://food2fork.com/api/search?key=';
+
+    fetch('/recipes',{
+      method: 'GET'
+    })
+    .then(function(promise){
+      // console.log(`Got response data with status ${response.status}:`,response);
+      return promise.json();
+    }).then (function (jsonData){
+      console.log(jsonData);
+    })
+    .catch(function(error) {
+      console.log('failed to send request', error);
+    });
   }
 
   render() {
