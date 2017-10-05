@@ -27,12 +27,18 @@ export default class SearchResults extends React.Component {
 
   handleSearch(){
 
+    let data = {
+      searchTerm : this.state.searchTerm
+    }
 
-    const API_KEY = '2e8098a7525207c36d8d2d2311d7a858';
-    const API_URL = 'http://food2fork.com/api/search?key=';
+    console.log(data);
 
     fetch('/recipes',{
-      method: 'GET'
+      method: 'POST',
+      body: JSON.stringify(data),
+      headers: {  
+        'Content-Type': 'application/json'
+      } 
     })
     .then(function(promise){
       // console.log(`Got response data with status ${response.status}:`,response);

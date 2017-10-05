@@ -108,13 +108,19 @@ db.connect()
  * Start Routes
  */
 
-app.get('/recipes',function(req,res){
+app.post('/recipes',function(req,res){
 
-	request('http://food2fork.com/api/search?key=2e8098a7525207c36d8d2d2311d7a858&q=potatoes', function (error, response, body) {
-	  // console.log('error:', error); // Print the error if one occurred
-	  // console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
-	  // console.log('body:', body); // Print the HTML for the Google homepage.
-	  res.json(body).end();
+	const API_KEY = '2e8098a7525207c36d8d2d2311d7a858';
+    const API_URL = 'http://food2fork.com/api/search?key=';
+
+	request(API_URL + API_KEY + '&q=' + req.body.searchTerm, function (error, response, body) {
+		if(error) {
+			res.status(500);
+			res.json({error : "Failed to find any recipes", status : 500}).end();
+		} else {
+			res.status(200);
+			res.json(body).end();
+		}
 	});
 
 
