@@ -27,4 +27,18 @@
         box-shadow: none;
         cursor: default!important;
     }
+
+    &--square {
+        @extend .o-button;
+        margin: 0;
+        padding: 0;
+        width: 80px;
+        height: 51px;
+        border-radius: 0;
+        box-shadow: none;
+
+    }
 }
+
+
+

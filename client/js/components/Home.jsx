@@ -9,7 +9,7 @@ export default class Home extends React.Component {
 		super(props);
 
 		this.state = {
-			recipes: []
+			searchResult: []
 	    };
 	}
 
@@ -21,7 +21,13 @@ export default class Home extends React.Component {
 	        			<h1> Foodbook </h1>
 	        		</div>
     				<div className='c-navbar__actions'>
-    					<SearchField onSearch= {recipe => this.setState({ recipes: recipe })} />
+    					<SearchField 
+	    					onSearchResult= {
+	    						searchResult => this.setState (
+	    							{ searchResult: searchResult }
+    							)
+	    					}
+    					/>
 					    <nav className='c-navbar__actions--nav'>
 					        <ul>
 		        				<li><Link to='/'>Homepage</Link></li>
@@ -30,7 +36,7 @@ export default class Home extends React.Component {
 		        		</nav>
     				</div>
         		</div>
-	        	<SearchResults onSearch = {this.state.recipes} />
+	        	<SearchResults recipeList= {this.state.searchResult} />
 	        </div>
     	);
     }
