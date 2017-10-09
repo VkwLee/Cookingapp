@@ -18,7 +18,7 @@ export default class Home extends React.Component {
         	<div className='c-home'>
         		<div className='c-navbar'>
         			<div className='c-navbar__logo'>
-	        			<h1> Foodbook </h1>
+	        			<h2> Empty your fridge </h2>
 	        		</div>
     				<div className='c-navbar__actions'>
     					<SearchField 

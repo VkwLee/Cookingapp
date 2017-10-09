@@ -23,13 +23,6 @@ app.use(bodyParser.json()); // Parses json, multi-part (file), url-encoded
 app.use(express.static('../src'));
 app.use(logger('dev'));
 
-// app.use('*', function(req, res, next) {
-//   res.header('Access-Control-Allow-Origin', '*');
-//   res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS');
-//   res.header('Access-Control-Allow-Headers', 'Content-Type');
-//   next();
-// });
-
 app.use(function (req, res, next) {
 
     // Website you wish to allow to connect
@@ -87,17 +80,6 @@ const db = new pg.Pool({
 
 db.connect()
 	.then( clientDB => {
-		// clientDB.query( "SELECT * FROM users")
-		// 	.then (userResult => {
-		// 		clientDB.release();
-		// 		console.log(userResult);	
-		// 	})
-
-		// 	.catch(error => {
-		// 		clientDB.release();
-		// 		console.error('couldn\'t get users',error.stack);
-		// 	});
-
 			
 	})
 	.catch(error => console.error('Could not connect with the database',error));
@@ -107,6 +89,16 @@ db.connect()
 /**
  * Start Routes
  */
+
+app.post('/save-recipe', function(req,res){
+
+	// get user from front-end
+	// check if recipe exists in the database
+	// if true: Get recipe id, insert in pivot table with user id and recipe id.
+	// if false: insert in recipe table get its new id. Insert in pivot table with user id and recipe id
+	// 
+
+});
 
 app.post('/recipes',function(req,res){
 
@@ -122,18 +114,6 @@ app.post('/recipes',function(req,res){
 			res.json(body).end();
 		}
 	});
-
-
-
-	// request.get()
-	// .on('response', function(response) {
-	// 	console.log(response.statusCode);
-	// 	res.json({body});
-	// })
-	// .on('error', function(error) {
-	// 	res.status(500);
-	//     res.json({error : "Failed to create new user", status : 500});
-	// })
 });
 
 app.get('/', function(req, res) {
@@ -160,12 +140,16 @@ app.post('/new-user', function(req, res) {
 					"INSERT INTO users (name, email, password_hash) VALUES ($1, $2, $3)",
 					 [data.name,data.email,data.password_hash]
 				).then (function(success) {
-					console.log('success');
-				    res.json({success : "Create new user succeeded", status : 200});
+					db.query (
+						"SELECT users_id,name FROM users WHERE email=$1",[data.email]
+					).then( user => {
+						res.status(200);
+						res.json(user.rows[0]).end();
+					});
 				}).catch(function(error) {
 					console.error('failed',error);
 					res.status(500);
-				    res.json({error : "Failed to create new user", status : 500});
+				    res.json({error : "Failed to create new user", status : 500}).end();
 			    });	   			
 	   		}
 		}
@@ -186,7 +170,13 @@ app.post('/login', function(req, res){
 					console.log(dbUser);
 					if(isMatch) {
 						console.log('success login',dbUser);
-					    res.json({success : "login succeeded", status : 200}).end();
+						res.status(200);
+						db.query (
+							"SELECT users_id,name FROM users WHERE email=$1",[req.body.email]
+						).then( user => {
+							res.status(200);
+							res.json(user.rows[0]).end();
+						});
 						// res.cookie('userId',matchedUser.id , {
 					 //      maxAge: 24 * 60 * 60 * 1000
 					 //    });

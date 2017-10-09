@@ -3,12 +3,14 @@ CREATE TABLE users (
   name TEXT NOT NULL,
   email TEXT NOT NULL UNIQUE,
   profile_pic TEXT,
-  password_hash CHAR(100) NOT NULL
+  password_hash CHAR(60) NOT NULL
 );
 
 CREATE TABLE recipes (
   recipes_id SERIAL PRIMARY KEY,
+  fork2food_id TEXT NOT NULL,
   title TEXT NOT NULL,
+  social_rank INTEGER,
   img TEXT NOT NULL,
   url TEXT NOT NULL
 );

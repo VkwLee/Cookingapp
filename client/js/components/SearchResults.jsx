@@ -10,16 +10,6 @@ export default class SearchResults extends React.Component {
 
     };
 
-    // this.handleChange = this.handleChange.bind(this);
-    // this.addNewUser = this.addNewUser.bind(this);
-  }
-
-
-
-// <h3>{this.props.recipeList[0]}</h3>
-
-  getRecipes() {
-    
   }
 
   render() {
@@ -43,37 +33,12 @@ export default class SearchResults extends React.Component {
       }
     }
 
-    // let toDoItemState;
-    // if (this.state.editMode === false) {
-    //   toDoItemState = <div onClick={this.editModeToggle}><input
-    //         type="checkbox"
-    //         checked={this.props.isDone}
-    //         onChange={this.handleToggleDone}
-
-    //       />
-    //       {this.props.text}</div>;
-    // } else {
-    //   toDoItemState = <div><input type="text" value={this.state.text} onChange={this.handleTextChange}/><span onClick={this.editModeToggle}>edit/not edit</span></div>;
-    // }
-
-    // return (
-    //   <div onKeyPress={this.handleKey} className={className}>
-    //     <label>
-    //       {toDoItemState}
-    //     </label>
-    //   </div>
-    // );
-
     return (
       <div className="c-search-results">
-        <div className="c-search-results__content">
-          <h5 className="c-search-results__content--title">
-            {this.props.recipeList.length} recipes
-          </h5>
-          <div>
-            {searchItems}
-          </div>
-        </div>
+        <h4 className="c-search-results__amount">
+          Enjoy here are {this.props.recipeList.length} recipes!
+        </h4>
+        {searchItems}
       </div>
     );
   }

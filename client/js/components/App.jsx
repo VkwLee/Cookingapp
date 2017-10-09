@@ -11,7 +11,9 @@ export default class App extends React.Component {
 		super(props);
 
 		this.state = {
-	      isLoggedIn : false
+	      isLoggedIn : false,
+	      user_id : null,
+	      user_name: null
 	    };
 
 	    this.handleToggleLogInState = this.handleToggleLogInState.bind(this);
@@ -27,14 +29,42 @@ export default class App extends React.Component {
 
     	const MyLogInForm = (props) => {
 	      return (
-	        <LoginForm {...props} toggleLogInState= {() => this.handleToggleLogInState()}/>	
+	        <LoginForm 
+		        {...props}
+		        storeUser = {
+					(userId,userName) => this.setState ({ 
+						user_id: userId,
+						user_name: userName 
+					})
+				}
+		        toggleLogInState = {() => this.handleToggleLogInState()}
+	        />	
 	      );
 	    }
 
 	    const MyNewUser = (props) => {
 	      return (
-	        <NewUser {...props} toggleLogInState= {() => this.handleToggleLogInState()}/>	
+	        <NewUser 
+		        {...props} 
+		        storeUser = {
+					(userId,userName) => this.setState ({ 
+						user_id: userId,
+						user_name: userName 
+					})
+				}
+				toggleLogInState= {() => this.handleToggleLogInState()}
+			/>	
 	      );
+	    }
+
+	    const MyHome = props => {
+
+	    	return (
+	    		<Home
+	    			{...props}
+	    			userId = {this.state.user_id}
+	    		/>
+    		)
 	    }
 
 	    if(this.state.isLoggedIn) {
@@ -42,7 +72,7 @@ export default class App extends React.Component {
 				<BrowserRouter>
 					<div className='c-app'>
 						<Switch>
-							<Route path='/' component={Home}/>
+							<Route path='/' render={MyHome}/>
 						</Switch>
 					</div>
 				</BrowserRouter>

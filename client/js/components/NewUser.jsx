@@ -63,9 +63,12 @@ export default class LoginForm extends React.Component {
           console.log('User has been created');
           self.props.toggleLogInState();
           self.props.history.push({ pathname: '/' })
+          return response.json();
         } else {
           console.log('User has not been created');
         }
+      }).then(user => {
+          self.props.storeUser(user.users_id,user.name);
       })
       .catch(function(error) {
         console.error('Failed to add user: ', error);

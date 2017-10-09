@@ -1,9 +1,10 @@
 .c-home {
-	height: 100%;
-	width: 100%;
-	padding: 0;
-	margin: 0;
-	background-color: lighten($color--main, 50%);
+    position: relative;
+    padding: 80px 0 10px 0;
+    min-height: 100%;
+    width: 100%;
+    margin: 0;
+    background-color: lighten($color--main, 20%);
 
 	.content {
 		display: block;

@@ -84,9 +84,12 @@ export default class LoginForm extends React.Component {
           console.log('Login successfull');
           self.props.toggleLogInState();
           self.props.history.push({ pathname: '/' })
+          return response.json();
         } else {
           console.log('Failed to login');
         }
+      }).then(user => {
+          self.props.storeUser(user.users_id,user.name);
       })
       .catch(function(error) {
         console.error('Failed to login: ', error);
@@ -95,16 +98,13 @@ export default class LoginForm extends React.Component {
           password_reponse     : 'password not the same'
         });
       });
-     
-      
- 
   }
 
   render() {
     return (
       <div className='c-login'>
-        <h1> Foodbook </h1>
-        <h4>  A place for real foodies </h4>
+        <h1>Empty your fridge</h1>
+        <h4>The place for cheapass students who can't cook.</h4>
         <form>
           <div>
             <label htmlFor='name'>Name</label>
