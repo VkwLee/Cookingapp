@@ -25,8 +25,8 @@ export default class SearchResults extends React.Component {
             recipe_id= {recipe['recipe_id']}
             title= {recipe['title']}
             social_rank= {recipe['social_rank']}
-            image_url= {recipe['image_url']}
-            source_url= {recipe['source_url']}
+            image_url= {recipe['img']} 
+            source_url= {recipe['url']}
             userId =  {this.props.userId}
           />
         );

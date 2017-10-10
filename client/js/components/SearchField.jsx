@@ -59,8 +59,8 @@ export default class SearchResults extends React.Component {
                   recipe_id: recipeJSON.recipe_id,
                   title: recipeJSON.title,
                   social_rank: recipeJSON.social_rank,
-                  image_url: recipeJSON.image_url,
-                  source_url:recipeJSON.source_url
+                  img: recipeJSON.image_url,
+                  url:recipeJSON.source_url
                 });
               }
               return recipes;

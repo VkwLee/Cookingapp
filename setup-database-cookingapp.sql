@@ -10,7 +10,7 @@ CREATE TABLE recipes (
   recipes_id SERIAL PRIMARY KEY,
   fork2food_id TEXT NOT NULL,
   title TEXT NOT NULL,
-  social_rank INTEGER,
+  social_rank NUMERIC,
   img TEXT NOT NULL,
   url TEXT NOT NULL
 );

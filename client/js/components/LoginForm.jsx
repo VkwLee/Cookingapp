@@ -65,39 +65,39 @@ export default class LoginForm extends React.Component {
     let password = this.state.password;
  
 
-      let self = this;
-      let data = {
-        name : name,
-        email: email,
-        password: password
-      };
+    let self = this;
+    let data = {
+      name : name,
+      email: email,
+      password: password
+    };
 
-      fetch('/login', {
-        method: 'POST',
-        body: JSON.stringify(data),
-        headers: {  
-          'Content-Type': 'application/json'
-        } 
-        
-      }).then(function(response) {
-        if(response.ok) {
-          console.log('Login successfull');
-          self.props.toggleLogInState();
-          self.props.history.push({ pathname: '/' })
-          return response.json();
-        } else {
-          console.log('Failed to login');
-        }
-      }).then(user => {
-          self.props.storeUser(user.users_id,user.name);
-      })
-      .catch(function(error) {
-        console.error('Failed to login: ', error);
-        self.setState({
-          password_style_class : 'error',
-          password_reponse     : 'password not the same'
-        });
+    fetch('/login', {
+      method: 'POST',
+      body: JSON.stringify(data),
+      headers: {  
+        'Content-Type': 'application/json'
+      } 
+      
+    }).then(function(response) {
+      if(response.ok) {
+        console.log('Login successfull');
+        self.props.toggleLogInState();
+        self.props.history.push({ pathname: '/' })
+        return response.json();
+      } else {
+        console.log('Failed to login');
+      }
+    }).then(user => {
+        self.props.storeUser(user.users_id,user.name);
+    })
+    .catch(function(error) {
+      console.error('Failed to login: ', error);
+      self.setState({
+        password_style_class : 'error',
+        password_reponse     : 'password not the same'
       });
+    });
   }
 
   render() {

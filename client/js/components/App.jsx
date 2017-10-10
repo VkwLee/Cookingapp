@@ -3,6 +3,7 @@ import LoginForm from "./LoginForm.jsx";
 import NewUser from "./NewUser.jsx";
 import {BrowserRouter, Route, Link, Switch} from 'react-router-dom';
 import Home from "./Home.jsx";
+import Profile from "./Profile.jsx";
 
 
 export default class App extends React.Component {
@@ -63,6 +64,18 @@ export default class App extends React.Component {
 	    		<Home
 	    			{...props}
 	    			userId = {this.state.user_id}
+	    			userName = {this.state.user_name}
+	    		/>
+    		)
+	    }
+
+	    const MyProfile = props => {
+
+	    	return (
+	    		<Profile
+	    			{...props}
+	    			userId = {this.state.user_id}
+	    			userName = {this.state.user_name}
 	    		/>
     		)
 	    }
@@ -72,7 +85,8 @@ export default class App extends React.Component {
 				<BrowserRouter>
 					<div className='c-app'>
 						<Switch>
-							<Route path='/' render={MyHome}/>
+							<Route exact path='/' render={MyHome}/>
+							<Route exact path='/profile' render={MyProfile}/>
 						</Switch>
 					</div>
 				</BrowserRouter>

@@ -90,6 +90,27 @@ db.connect()
  * Start Routes
  */
 
+
+app.post('/profile-recipes', function(req,res){
+	const users_id = req.body.userId;
+
+	db.query (
+		"SELECT * FROM users_recipes AS ur INNER JOIN recipes AS r ON (ur.recipes_id = r.recipes_id) WHERE users_id = $1",[users_id]
+	).then(results => {
+		let recipeList = [];
+		for(let recipe of results.rows) {
+			recipeList.push(recipe);
+		}
+		return recipeList;
+	}).then(recipelist => {
+		res.status(200);
+		res.json(recipelist).end();
+	}).catch( error => {
+		res.status(500);
+		throw error;
+	});
+});
+
 app.post('/save-recipe', function(req,res){
 
 	console.log('save recipe',req.body);
@@ -102,13 +123,6 @@ app.post('/save-recipe', function(req,res){
 		img			: req.body.img,
 		url 		: req.body.url
 	};
-
-	// get user from front-end
-	// check if recipe exists in the database
-	// if true: Get recipe id, insert in pivot table with user id and recipe id.
-	// if false: insert in recipe table get its new id. Insert in pivot table with user id and recipe id
-	// 
-	// 
 	
 	recipeExist(data.fork2food_id)
 	.then(recipeId => {

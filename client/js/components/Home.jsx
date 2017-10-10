@@ -2,7 +2,6 @@ import React from "react";
 import {Route ,Link} from 'react-router-dom';
 import SearchResults from "./SearchResults.jsx";
 import SearchField from "./SearchField.jsx";
-import Profile from "./Profile.jsx";
 
 export default class Home extends React.Component {
 
@@ -31,8 +30,8 @@ export default class Home extends React.Component {
     					/>
 					    <nav className='c-navbar__actions--nav'>
 					        <ul>
-		        				<li><Link to='/'>Homepage</Link></li>
-		        				<li><Link to='/profile'>Profile</Link></li>
+		        				<li><Link to='/' className='active'>Homepage</Link></li>
+		        				<li><Link to='/profile'>{this.props.userName}</Link></li>
 		        			</ul>
 		        		</nav>
     				</div>
