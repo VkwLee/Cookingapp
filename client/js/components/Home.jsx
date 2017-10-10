@@ -2,6 +2,7 @@ import React from "react";
 import {Route ,Link} from 'react-router-dom';
 import SearchResults from "./SearchResults.jsx";
 import SearchField from "./SearchField.jsx";
+import Profile from "./Profile.jsx";
 
 export default class Home extends React.Component {
 
@@ -36,7 +37,7 @@ export default class Home extends React.Component {
 		        		</nav>
     				</div>
         		</div>
-	        	<SearchResults recipeList= {this.state.searchResult} />
+	        	<SearchResults userId={this.props.userId} recipeList= {this.state.searchResult} />
 	        </div>
     	);
     }

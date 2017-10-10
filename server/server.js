@@ -92,11 +92,79 @@ db.connect()
 
 app.post('/save-recipe', function(req,res){
 
+	console.log('save recipe',req.body);
+
+	const data = {
+		users_id	: req.body.user_id,
+		fork2food_id: req.body.fork2food_id,
+		title		: req.body.title,
+		social_rank : req.body.social_rank,
+		img			: req.body.img,
+		url 		: req.body.url
+	};
+
 	// get user from front-end
 	// check if recipe exists in the database
 	// if true: Get recipe id, insert in pivot table with user id and recipe id.
 	// if false: insert in recipe table get its new id. Insert in pivot table with user id and recipe id
 	// 
+	// 
+	
+	recipeExist(data.fork2food_id)
+	.then(recipeId => {
+		if (recipeId) {
+			console.log('recipe does exists',recipeId);
+			console.log('recipe save with user id',data.users_id);
+			db.query (
+				"SELECT * FROM users_recipes WHERE (users_id = $1 AND recipes_id = $2)",[data.users_id,recipeId]
+			).then( results => {
+				if(results.rowCount === 1) {
+					console.log('You already saved this recipe!');
+					res.status(200);
+					res.json({success: "You had already saved this recipe before!", status:200}).end();	
+				} else {
+					db.query(
+						"INSERT INTO users_recipes (users_id, recipes_id) VALUES ($1, $2)",[data.users_id,recipeId]
+					).then( success =>{
+						res.status(200);
+						res.json({success:"Saving recipe on you profile succeeded!",status:200}).end();
+					})
+				}
+			}).catch( error => {
+				res.status(500);
+				res.json({error: "error fetching pivot table",status:500}).end();
+			});
+			
+		} else {
+			console.log('recipe doesn\'t exists');
+			db.query ( 
+				"INSERT INTO recipes (fork2food_id, title, social_rank, img, url) VALUES ($1, $2, $3, $4, $5)",
+				 [data.fork2food_id, data.title, data.social_rank, data.img, data.url]
+			).then (function(success) {
+				db.query (
+					"SELECT recipes_id FROM recipes WHERE fork2food_id=$1",[data.fork2food_id]
+				).then( recipes_id => {
+					console.log('recipes_id',recipes_id.rows[0]['recipes_id']);
+					console.log('users_id',data.users_id);
+					db.query (
+						"INSERT INTO users_recipes (users_id, recipes_id) VALUES ($1, $2)",[data.users_id,recipes_id.rows[0]['recipes_id']]
+					).then(function(success){
+						res.status(200);
+						res.json({success : "Recipe saved in pivot table", status : 200}).end();
+					});
+				});
+			}).catch(function(error) {
+				console.error('failed',error);
+				res.status(500);
+			    res.json({error : "Failed to save recipe", status : 500}).end();
+		    });	   		
+			
+		}
+	})
+	.catch(error => { 
+		res.status(400);
+		res.json({error : 'Could\'t fetch the recipe', status : 400}).end();
+	});	
 
 });
 
@@ -218,6 +286,24 @@ function createUser(email, password, callback){
 	});
 
 	return true;
+}
+
+function recipeExist(fork2food_id){
+	return db.query ( 
+		'SELECT recipes_id FROM recipes WHERE fork2food_id=($1)', [fork2food_id]
+	).then ( result => {
+		console.log('fork2food_id',result.rowCount);
+		
+		if(result.rowCount === 1 ) {
+			return result.rows[0]['recipes_id'];
+		} else {
+			return false;
+		}
+	})
+	.catch(function(error) {
+		console.error('could\'t connect to the recipe database',error);
+		// throw error;
+    });
 }
 
 function userExist(email){

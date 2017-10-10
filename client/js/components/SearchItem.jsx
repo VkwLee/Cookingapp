@@ -14,7 +14,7 @@ export default class SearchItem extends React.Component {
   }
 
 
-  saveRecipe() {
+  saveRecipe(evt) {
 
     evt.preventDefault();
 
@@ -23,15 +23,16 @@ export default class SearchItem extends React.Component {
     let social_rank  = this.props.social_rank;
     let img          = this.props.image_url;
     let url          = this.props.source_url;
+    let user_id      = this.props.userId;
       
     let self = this;
     let data = {
-      // user_id     : 
+      user_id     : user_id,
       fork2food_id: fork2food_id,
       title       : title,
       social_rank : social_rank,
       img         : img,
-      url         :url
+      url         : url
     };
 
     fetch('/save-recipe', {
